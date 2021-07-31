@@ -109,7 +109,7 @@ minho_img <- image_read("data/speakers_mask/leeminho_face_mask.png")
 
 image_join(c(minho_img, sanghyun_img)) %>%
   image_animate(fps=1) %>%
-  image_write("data/speakers_mask//datarize.gif")
+  image_write("data/speakers_mask//datarize_face_mask.gif")
 
 # 4. 데이터라이즈 김상현님 얼굴 추출 문재 -------------
 
