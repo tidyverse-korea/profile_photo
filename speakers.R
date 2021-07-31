@@ -23,9 +23,9 @@ speakers_tbl <- speakers %>%
                                    glue::glue("{fs::path_ext_remove(파일명)}_face_mask.png"))) %>% 
   mutate(profile_photo = glue::glue('data/speakers_mask/{파일명}')) %>% 
   ## 표에 표시할 칼럼  -----------------------------------------
-  select(flag_URL, profile_photo, 발표자명, 소속, 발표제목) %>% 
-  ## 어수행 오류 -----
-  filter(!str_detect(발표자명, "어수행|박상훈|이민호"))
+  select(flag_URL, profile_photo, 발표자명, 소속, 발표제목) 
+  # ## 어수행 오류 -----
+  # filter(!str_detect(발표자명, "어수행|박상훈|이민호"))
 
 speakers_tbl_gt <- speakers_tbl %>% 
   ## ISO2 국기 표에 삽입 -----------------------------------------
