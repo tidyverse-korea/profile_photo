@@ -111,6 +111,57 @@ image_join(c(minho_img, sanghyun_img)) %>%
   image_animate(fps=1) %>%
   image_write("data/speakers_mask//datarize_face_mask.gif")
 
-# 4. 데이터라이즈 김상현님 얼굴 추출 문재 -------------
+# 4. 얼굴 추출 오류 -------------
+## 4.1. 데이터라이즈 김상현님 얼굴 추출 문제 ------
 
+process_sanghyun <- function(raw_image) {
+  # 1. 얼굴인식 좌표 추출 --------------
+  soohaeng_img <- image_read(raw_image) 
+  
+  ## 데이터프레임 자료구조 변환
+  face_tbl <- tribble(~radius, ~x, ~y,
+                      200, 600, 200)
+  
+  # 3. 이미지 잘라내기 -------------
+  soohaeng_crop <- soohaeng_img %>% 
+    image_crop(geometry_area(x_off = face_tbl$x - face_tbl$radius * 1.5, 
+                             y_off = face_tbl$y - face_tbl$radius * 1.5,
+                             width = face_tbl$radius  * 2 * 1.5, 
+                             height = face_tbl$radius * 2 * 1.5))
+  
+  # 4. 이미지 저장하기 -------------
+  processed_filename <- fs::path_file(raw_image) %>% fs::path_ext_remove(.)
+  
+  soohaeng_crop %>% 
+    image_write(path =  glue::glue("data/speakers_face/{processed_filename}_face.png"))
+  
+}
 
+process_sanghyun("data/speakers/sanghoon_park.jpg")
+
+## 4.2. 어수행님 얼굴 추출 문제 ------
+
+process_soohaeng <- function(raw_image) {
+  # 1. 얼굴인식 좌표 추출 --------------
+  soohaeng_img <- image_read(raw_image) 
+  
+  ## 데이터프레임 자료구조 변환
+  face_tbl <- tribble(~radius, ~x, ~y,
+                      150, 500, 350)
+  
+  # 3. 이미지 잘라내기 -------------
+  soohaeng_crop <- soohaeng_img %>% 
+    image_crop(geometry_area(x_off = face_tbl$x - face_tbl$radius * 1.5, 
+                             y_off = face_tbl$y - face_tbl$radius * 1.5,
+                             width = face_tbl$radius  * 2 * 1.5, 
+                             height = face_tbl$radius * 2 * 1.5))
+  
+  # 4. 이미지 저장하기 -------------
+  processed_filename <- fs::path_file(raw_image) %>% fs::path_ext_remove(.)
+  
+  soohaeng_crop %>% 
+    image_write(path =  glue::glue("data/speakers_face/{processed_filename}_face.png"))
+  
+}
+
+process_soohaeng("data/speakers/soohaeng_eo.jpeg")

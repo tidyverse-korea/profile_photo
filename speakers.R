@@ -18,7 +18,9 @@ speakers %>%
   mutate(iso2 = ifelse(국가 == "한국", "kr", "us")) %>% 
   mutate(flag_URL = glue::glue('data/worldflags/{iso2}.png')) %>% 
   ## 발표자 사진  -----------------------------------------
-  mutate(파일명 = glue::glue("{fs::path_ext_remove(파일명)}_face_mask.png")) %>% 
+  mutate(파일명 = ifelse(str_detect(파일명, "datarize"), 
+                                   glue::glue("{fs::path_ext_remove(파일명)}_face_mask.gif"),
+                                   glue::glue("{fs::path_ext_remove(파일명)}_face_mask.png"))) %>% 
   mutate(profile_photo = glue::glue('data/speakers_mask/{파일명}')) %>% 
   ## 표에 표시할 칼럼  -----------------------------------------
   select(flag_URL, profile_photo, 발표자명, 소속, 발표제목)  %>% 
