@@ -11,7 +11,7 @@ fs::dir_create("data/speakers_mask")
 # 1. 발표자 -------
 # https://statkclee.github.io/data-science/ds-rconf-profile.html
 
-speakers <- read_excel("data/발표자_대쉬보드.xlsx")
+speakers <- read_excel("data/발표자_대쉬보드.xlsx", sheet="speakers")
 
 speakers_tbl <- speakers %>% 
   ## ISO2 국기 -----------------------------------------
