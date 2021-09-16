@@ -5,10 +5,13 @@ library(opencv)
 library(gt)
 library(readxl)
 
+fs::dir_create("data/speakers_face")
+fs::dir_create("data/speakers_mask")
+
 # 1. 발표자 -------
 # https://statkclee.github.io/data-science/ds-rconf-profile.html
 
-speakers <- read_excel("data/발표자_대쉬보드.xlsx", sheet = "speakers")
+speakers <- read_excel("data/발표자_대쉬보드.xlsx", sheet="speakers")
 
 speakers_tbl <- speakers %>% 
   ## ISO2 국기 -----------------------------------------
@@ -20,7 +23,7 @@ speakers_tbl <- speakers %>%
                                    glue::glue("{fs::path_ext_remove(파일명)}_face_mask.png"))) %>% 
   mutate(profile_photo = glue::glue('data/speakers_mask/{파일명}')) %>% 
   ## 표에 표시할 칼럼  -----------------------------------------
-  select(flag_URL, profile_photo, 발표자명, 소속, 발표제목초록) 
+  select(flag_URL, profile_photo, 발표자명, 소속, 발표제목) 
   # ## 어수행 오류 -----
   # filter(!str_detect(발표자명, "어수행|박상훈|이민호"))
 
@@ -55,7 +58,7 @@ speakers_tbl_gt <- speakers_tbl %>%
 speakers_tbl_gt %>% 
   tab_header(
     title = md("**&#x2600; 한국 R 컨퍼런스 발표자 &#x2600;**"),
-    subtitle = md("*오픈 커뮤니티, 스타트업, 국내외 대학, 병원, 산업계*")
+    subtitle = md("*NLP, 웹앱, 예측, 재현가능 과학, 산업현장, 사회과학 ...*")
   ) %>% 
   tab_source_note(
     source_note = md("한국 R 컨퍼런스: <https://use-r.kr/>")
@@ -70,17 +73,5 @@ speakers_tbl_gt %>%
   ) %>% 
   cols_align(
     align = "center",
-    columns = c(flag_URL, profile_photo, 발표자명, 소속)
-  ) %>%
-  cols_align(
-    align = "left",
-    columns = 발표자소개
-  ) %>%  
-  cols_width(
-    flag_URL ~ px(50),
-    profile_photo ~ px(100),
-    발표자명 ~ px(100),
-    소속 ~ px(150),
-    발표자소개 ~ px(500)
-  ) %>% 
-  gt::fmt_markdown(columns = `발표자소개`)
+    columns = everything()
+  )  

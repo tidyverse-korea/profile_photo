@@ -3,11 +3,67 @@ library(tidyverse)
 library(magick)
 library(opencv)
 
-fs::dir_create("data/speakers_face")
-fs::dir_create("data/speakers_mask")
+# fs::dir_create("data/speakers_face")
+# fs::dir_create("data/speakers_mask")
 
 # 1. 얼굴 추출 -------
 ## 참고: https://statkclee.github.io/deep-learning/r-face-conference.html
+
+## 1.0. 얼굴 추출 오류 -------------
+### 데이터라이즈 김상현님 얼굴 추출 문제 ------
+
+process_sanghyun <- function(raw_image) {
+  # 1. 얼굴인식 좌표 추출 --------------
+  sanghyun_img <- image_read(raw_image) 
+  
+  ## 데이터프레임 자료구조 변환
+  face_tbl <- tribble(~radius, ~x, ~y,
+                      200, 600, 200)
+  
+  # 3. 이미지 잘라내기 -------------
+  sanghyun_crop <- sanghyun_img %>% 
+    image_crop(geometry_area(x_off = face_tbl$x - face_tbl$radius * 2.5, 
+                             y_off = face_tbl$y - face_tbl$radius * 2.5,
+                             width = face_tbl$radius  * 2 * 1.3, 
+                             height = face_tbl$radius * 2 * 3.0))
+  
+  # 4. 이미지 저장하기 -------------
+  processed_filename <- fs::path_file(raw_image) %>% fs::path_ext_remove(.)
+  
+  sanghyun_crop %>% 
+    image_write(path =  glue::glue("data/speakers_face/{processed_filename}_face.png"))
+  
+}
+
+process_sanghyun("data/speakers/kimsanghyun.jpg")
+
+### 어수행님 얼굴 추출 문제 ------
+
+process_soohaeng <- function(raw_image) {
+  # 1. 얼굴인식 좌표 추출 --------------
+  soohaeng_img <- image_read(raw_image) 
+  
+  ## 데이터프레임 자료구조 변환
+  face_tbl <- tribble(~radius, ~x, ~y,
+                      150, 500, 350)
+  
+  # 3. 이미지 잘라내기 -------------
+  soohaeng_crop <- soohaeng_img %>% 
+    image_crop(geometry_area(x_off = face_tbl$x - face_tbl$radius * 1.5, 
+                             y_off = face_tbl$y - face_tbl$radius * 1.5,
+                             width = face_tbl$radius  * 2 * 1.5, 
+                             height = face_tbl$radius * 2 * 1.5))
+  
+  # 4. 이미지 저장하기 -------------
+  processed_filename <- fs::path_file(raw_image) %>% fs::path_ext_remove(.)
+  
+  soohaeng_crop %>% 
+    image_write(path =  glue::glue("data/speakers_face/{processed_filename}_face.png"))
+  
+}
+
+process_soohaeng("data/speakers/soohaeng_eo.jpeg")
+
 
 ## 1.1. 얼굴 추출 함수 -------
 
@@ -51,11 +107,13 @@ extract_face <- function(raw_image) {
 
 # extract_face('data/speakers/julia_silge.jpg')
 
-extract_face('data/speakers/jinhwan_kim.jpg')
+# extract_face('data/speakers/kimsanghyun.jpg')
 
 ## 1.2. 발표자 얼굴 전체 변환 -------
 
 speakers_fs <- fs::dir_ls("data/speakers/")
+## 김상현님 제외 -----
+speakers_fs <- speakers_fs[!str_detect(speakers_fs, "kimsanghyun")]
 
 safely_extract_face <- safely(extract_face, otherwise = NA_real_)
 
@@ -92,7 +150,7 @@ circular_mask <- function(raw_image) {
   # return(created_img)
 }
 
-circular_mask("data/speakers_face/julia_silge_face.png")
+# circular_mask("data/speakers_face/julia_silge_face.png")
 
 ## 2.2. 전체 졸업앨범 자동화 -------
 
@@ -101,6 +159,7 @@ speakers_face_fs <- fs::dir_ls("data/speakers_face/")
 safely_circular_mask <- safely(circular_mask, otherwise = NA_real_)
 
 walk(speakers_face_fs, safely_circular_mask)
+
 
 # 3. 데이터라이즈 GIF -------
 
@@ -112,5 +171,4 @@ image_join(c(minho_img, sanghyun_img)) %>%
   image_write("data/speakers_mask//datarize_face_mask.gif")
 
 # 4. 데이터라이즈 김상현님 얼굴 추출 문제 -------------
-
 

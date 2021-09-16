@@ -8,9 +8,12 @@ library(readxl)
 # 1. 발표자 -------
 # https://statkclee.github.io/data-science/ds-rconf-profile.html
 
-speakers <- read_excel("data/발표자_대쉬보드.xlsx", sheet = "speakers")
+keynote <- tribble(~"구분", ~"시간", ~"발표자명", ~"소속", ~"발표제목", ~"국가", ~"파일명",
+                   "오프닝", "10:00~10:15", "OOO", "OOOO", "OOOOO", "한국", "opening_speaker.png",
+                   "키노트", "10:15~11:00", "Julia Silge", "RStudio", "NLP and text modeling with tidymodels", "미국", "julia_silge.png",
+                   "키노트", "11:00~11:45",  "유충현", "한화생명", "`dlookr` - AudoEDA", "한국", "choonghyun_ryu.png")
 
-speakers_tbl <- speakers %>% 
+keynote_tbl <- keynote %>% 
   ## ISO2 국기 -----------------------------------------
   mutate(iso2 = ifelse(국가 == "한국", "kr", "us")) %>% 
   mutate(flag_URL = glue::glue('data/worldflags/{iso2}.png')) %>% 
@@ -20,13 +23,11 @@ speakers_tbl <- speakers %>%
                                    glue::glue("{fs::path_ext_remove(파일명)}_face_mask.png"))) %>% 
   mutate(profile_photo = glue::glue('data/speakers_mask/{파일명}')) %>% 
   ## 표에 표시할 칼럼  -----------------------------------------
-  select(flag_URL, profile_photo, 발표자명, 소속, 발표제목초록) 
-  # ## 어수행 오류 -----
-  # filter(!str_detect(발표자명, "어수행|박상훈|이민호"))
+  select(구분, 시간, flag_URL, profile_photo, 발표자명, 소속, 발표제목) 
 
-speakers_tbl_gt <- speakers_tbl %>% 
+keynote_tbl_gt <- keynote_tbl %>% 
   ## ISO2 국기 표에 삽입 -----------------------------------------
-  gt() %>% 
+  gt(rowname_col = "시간", groupname_col = "구분") %>% 
   gt::text_transform(  
     locations = cells_body(columns = flag_URL),    
     fn = function(x) {
@@ -52,20 +53,20 @@ speakers_tbl_gt <- speakers_tbl %>%
     cols_label(profile_photo = "")
   
 
-speakers_tbl_gt %>% 
+keynote_tbl_gt %>% 
   tab_header(
-    title = md("**&#x2600; 한국 R 컨퍼런스 발표자 &#x2600;**"),
-    subtitle = md("*오픈 커뮤니티, 스타트업, 국내외 대학, 병원, 산업계*")
+    title = md("**&#x2600; 한국 R 컨퍼런스 키노트 발표 &#x2600;**"),
+    subtitle = md("*Make R Great Again!!!*")
   ) %>% 
   tab_source_note(
-    source_note = md("한국 R 컨퍼런스: <https://use-r.kr/>")
+    source_note = md("**한국 R 컨퍼런스**: 발표내용은 조율중이며 변경될 수 있습니다.")
   ) %>% 
   tab_options(
-    heading.background.color = "#e8fc03",
+    heading.background.color = "#1E61B0", # R logo 파란색
     heading.title.font.size = "32px",
-    column_labels.background.color = "#a5fc03",
+    column_labels.background.color = "#F7F7F7", # R logo 회색 
     column_labels.font.weight = "bold",
-    stub.background.color = "#bcbddc",
+    stub.background.color = "#ffffff",
     stub.font.weight = "bold"
   ) %>% 
   cols_align(
@@ -73,14 +74,22 @@ speakers_tbl_gt %>%
     columns = c(flag_URL, profile_photo, 발표자명, 소속)
   ) %>%
   cols_align(
-    align = "left",
-    columns = 발표자소개
+    align = "center",
+    columns = 발표제목
   ) %>%  
   cols_width(
     flag_URL ~ px(50),
     profile_photo ~ px(100),
     발표자명 ~ px(100),
     소속 ~ px(150),
-    발표자소개 ~ px(500)
+    발표제목 ~ px(500)
   ) %>% 
-  gt::fmt_markdown(columns = `발표자소개`)
+  gt::fmt_markdown(columns = `발표제목`) %>% 
+  tab_style(
+    style = list(
+      cell_fill("#3764B0"),
+      cell_text(color = "white", weight = "bold",
+                align = "left",
+                size = px(25))
+    ),
+    locations = cells_row_groups())
