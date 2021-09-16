@@ -51,7 +51,7 @@ extract_face <- function(raw_image) {
 
 # extract_face('data/speakers/julia_silge.jpg')
 
-extract_face('data/speakers/kimsanghyun.jpg')
+extract_face('data/speakers/jinhwan_kim.jpg')
 
 ## 1.2. 발표자 얼굴 전체 변환 -------
 
@@ -111,6 +111,6 @@ image_join(c(minho_img, sanghyun_img)) %>%
   image_animate(fps=1) %>%
   image_write("data/speakers_mask//datarize_face_mask.gif")
 
-# 4. 데이터라이즈 김상현님 얼굴 추출 문재 -------------
+# 4. 데이터라이즈 김상현님 얼굴 추출 문제 -------------
 
 
